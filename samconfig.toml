@@ -1,0 +1,10 @@
+version = 0.1
+[productservicestack]
+[productservicestack.deploy]
+[productservicestack.deploy.parameters]
+stack_name = "sbstack"
+region = "eu-west-2"
+s3_prefix = "productservicestack"
+confirm_changeset = true
+capabilities = ["CAPABILITY_IAM", "CAPABILITY_AUTO_EXPAND", "CAPABILITY_NAMED_IAM"]
+parameter_overrides = "stackName=\"sbstack\""

@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Products Service Stack
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  stackName:
+    Type: String
+    Default: ''
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${stackName}-HelloWorldFunction
+      Handler: dist/main.handler
+      Runtime: nodejs16.x
+      MemorySize: 128
+      Timeout: 100
+      Architectures:
+      - x86_64
+      Description: Sample hello world
+      Events:
+        Nest:
+          Type: Api
+          Properties:
+            Path: /helloworld
+            Method: GET
+      CodeUri: HelloWorldFunction
+    Metadata:
+      SamResourceId: HelloWorldFunction
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${stackName}-Products
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+Outputs:
+  NestApi:
+    Description: API Gateway endpoint URL for Prod stage for a Nest function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
