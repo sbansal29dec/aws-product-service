@@ -21,12 +21,12 @@
 $ nest start
 
 # Creating build
-$ sam.cmd build 
+$ sam.cmd build (sam build for Mac)
 OR 
-$ npm run sambuild
+$ npm run sambuild 
 
 # Deploy (update samconfig.toml file to create a different stack name for each developer)
-$ sam.cmd deploy --config-env productservicestack --resolve-s3 
+$ sam.cmd deploy --config-env productservicestack --resolve-s3 (sam deploy for Mac)
 OR 
 $ npm run samdeploy
 ```
