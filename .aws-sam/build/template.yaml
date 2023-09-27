@@ -6,41 +6,51 @@ Parameters:
     Type: String
     Default: ''
 Resources:
-  HelloWorldFunction:
+  ProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName:
-        Fn::Sub: ${stackName}-HelloWorldFunction
-      Handler: dist/main.handler
+      FunctionName: ProductFunction
+      Handler: dist/productlambda.handler
       Runtime: nodejs16.x
       MemorySize: 128
       Timeout: 100
       Architectures:
       - x86_64
-      Description: Sample hello world
+      Description: First create product call
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ProductsTable
+      Environment:
+        Variables:
+          PRODUCTS_TABLE_NAME:
+            Ref: ProductsTable
       Events:
         Nest:
           Type: Api
           Properties:
-            Path: /helloworld
-            Method: GET
-      CodeUri: HelloWorldFunction
+            Path: /{proxy+}
+            Method: any
+      CodeUri: ProductFunction
     Metadata:
-      SamResourceId: HelloWorldFunction
+      SamResourceId: ProductFunction
   ProductsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName:
-        Fn::Sub: ${stackName}-Products
+      TableName: Products
       AttributeDefinitions:
       - AttributeName: id
+        AttributeType: S
+      - AttributeName: title
         AttributeType: S
       KeySchema:
       - AttributeName: id
         KeyType: HASH
+      - AttributeName: title
+        KeyType: RANGE
       ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 Outputs:
@@ -48,3 +58,7 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage for a Nest function
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  ProductsTable:
+    Value:
+      Ref: ProductsTable
+    Description: Table for storing products data.
